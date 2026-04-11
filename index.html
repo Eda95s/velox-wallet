@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Velox Wallet</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="mobile-app">
+        <header class="wallet-header">
+            <p>Общий баланс</p>
+            <h1>0</h1>
+            <div class="wallet-actions">
+                <button><i class="fas fa-arrow-up"></i><span>Отправить</span></button>
+                <button><i class="fas fa-arrow-down"></i><span>Получить</span></button>
+                <button><i class="fas fa-credit-card"></i><span>Купить</span></button>
+            </div>
+        </header>
+
+        <main class="assets-list">
+            <div class="asset-item">
+                <div class="asset-icon"><i class="fas fa-bolt"></i></div>
+                <div class="asset-info">
+                    <span class="asset-name">Kaspa KAS</span>
+                </div>
+                <div class="asset-value">
+                    <span class="val-coin">5,000</span>
+                    <span class="val-usd">0</span>
+                </div>
+</div> <div id="receive-section" style="display: none; padding: 20px; text-align: center;">
+        <p style="color: var(--text-secondary); margin-bottom: 10px;">Ваш адрес для получения:</p>
+        <div id="wallet-address" style="background: #1a1c22; padding: 15px; border-radius: 12px; word-break: break-all; font-family: monospace; border: var(--border); color: #fff; font-size: 14px;">
+            </div>
+            </div>
+        
+    <div id="receive-section" style="display: none; padding: 20px; text-align: center;">
+        <p style="color: var(--text-secondary); margin-bottom: 10px;">Ваш адрес для получения:</p>
+        <div id="wallet-address" style="background: #1a1c22; padding: 15px; border-radius: 12px; word-break: break-all; font-family: monospace; border: var(--border); color: #fff; font-size: 14px;"></div>
+    </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="active"><i class="fas fa-wallet"></i><span>Кошелек</span></button>
+            <button><i class="fas fa-compass"></i><span>DApps</span></button>
+            <button><i class="fas fa-gear"></i><span>Настройки</span></button>
+        </nav>
+    </div>
+    <script src="ui.js"></script>
+    <script src="kaspa.js"></script>
+</body>
+</html>
