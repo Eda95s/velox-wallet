@@ -15,8 +15,9 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Используем V1 вместо V1BETA - это самый стабильный путь
-          curl "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
+          # Используем путь models/gemini-pro вместо gemini-1.5-flash
+          # Это стандарт, который есть в каждом API ключе
+          curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$GEMINI_API_KEY" \
           -H 'Content-Type: application/json' \
           -X POST \
           -d '{
@@ -28,5 +29,5 @@ jobs:
           git config user.name "AI Bot"
           git config user.email "bot@github.com"
           git add ai_solution.json
-          git commit -m "Save API response" || echo "No changes"
+          git commit -m "Update" || echo "No changes"
           git push
