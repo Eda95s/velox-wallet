@@ -15,21 +15,18 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Прямой запрос к API через curl
+          # Отправляем запрос и сохраняем ВЕСЬ ответ в файл
           curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
           -H 'Content-Type: application/json' \
           -X POST \
           -d '{
-            "contents": [{"parts":[{"text": "Напиши код для задачи: ${{ github.event.issue.title }}. Ответь просто текстом, без лишнего оформления."}]}]
-          }' > response.json
-          
-          # Берем ответ и сохраняем его в файл
-          cat response.json | grep -o '"text": "[^"]*"' | head -n 1 | sed 's/"text": "//' | sed 's/"//' > ai_solution.md
+            "contents": [{"parts":[{"text": "Напиши код для задачи: ${{ github.event.issue.title }}"}]}]
+          }' > ai_solution.json
 
-      - name: Push solution
+      - name: Push response
         run: |
           git config user.name "AI Bot"
           git config user.email "bot@github.com"
-          git add ai_solution.md
-          git commit -m "Update from AI Bot" || echo "No changes to commit"
+          git add ai_solution.json
+          git commit -m "Save full API response" || echo "No changes"
           git push
