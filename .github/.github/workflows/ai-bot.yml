@@ -1,0 +1,26 @@
+name: AI Auto-Coder
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  ai-task:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Process Issue with AI
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        run: |
+          echo "Задача получена: ${{ github.event.issue.title }}"
+          # Здесь будет логика, которая будет обрабатывать твои задачи
+          # Пока что создадим тестовый лог, чтобы проверить связь
+          echo "AI работает над: ${{ github.event.issue.body }}" > ai_status.txt
+          git config user.name "AI Bot"
+          git config user.email "bot@velox.wallet"
+          git add ai_status.txt
+          git commit -m "AI processed issue: ${{ github.event.issue.title }}"
+          git push
