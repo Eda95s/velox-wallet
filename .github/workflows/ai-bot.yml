@@ -1,0 +1,18 @@
+name: AI Auto-Coder
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  ai-task:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Process Issue with AI
+        run: |
+          # Здесь будет логика вызова API (Gemini), которая будет 
+          # сравнивать твой запрос с файлами и предлагать изменения.
+          echo "Processing task: ${{ github.event.issue.title }}"
