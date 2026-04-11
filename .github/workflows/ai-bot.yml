@@ -10,26 +10,25 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Ask AI for Solution
+      - name: Ask AI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
-          # Отправляем запрос к Gemini
-          RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
+          # Используем другой формат запроса, чтобы точно получить текст
+          curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
           -H 'Content-Type: application/json' \
           -X POST \
           -d '{
-            "contents": [{"parts":[{"text": "Ты - профессиональный разработчик. Напиши код для задачи: '"$ISSUE_TITLE"'. Если нужно изменить index.html или js-файлы, напиши код для них в формате ### ФАЙЛ: имя_файла и код в блоках."}]}]
-          }')
+            "contents": [{"parts":[{"text": "Напиши код для задачи: ${{ github.event.issue.title }}. Ответь просто кодом."}]}]
+          }' > response.json
           
-          # Вытаскиваем текст ответа через jq (он есть в окружении)
-          echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text' > ai_solution.md
+          # Читаем ответ через python (он есть в окружении и надежнее, чем jq)
+          python3 -c "import json; print(json.load(open('response.json'))['candidates'][0]['content']['parts'][0]['text'])" > ai_solution.md
       
-      - name: Push solution
+      - name: Push
         run: |
           git config user.name "AI Bot"
           git config user.email "bot@github.com"
           git add ai_solution.md
-          git commit -m "AI solved: ${{ github.event.issue.title }}"
+          git commit -m "AI update"
           git push
