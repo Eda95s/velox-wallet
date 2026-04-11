@@ -8,30 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Generate Code
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Используем curl для вызова API Gemini напрямую
-          curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
-          -H 'Content-Type: application/json' \
-          -X POST \
-          -d '{
-            "contents": [{
-              "parts":[{"text": "Напиши код для задачи: ${{ github.event.issue.title }}. Верни только код в формате Markdown."}]
-            }]
-          }' > response.json
-          
-          # Вытягиваем текст из ответа и сохраняем в файл
-          cat response.json | jq -r '.candidates[0].content.parts[0].text' > ai_solution.md
-          
+          # Создаем простой текстовый файл для проверки связи
+          echo "Бот получил задачу: ${{ github.event.issue.title }}" > ai_solution.md
+          echo "---" >> ai_solution.md
+          echo "Если ты видишь этот текст, значит Action работает!" >> ai_solution.md
+      
       - name: Push solution
         run: |
           git config user.name "AI Bot"
           git config user.email "bot@github.com"
           git add ai_solution.md
-          git commit -m "Add solution for issue #${{ github.event.issue.number }}"
+          git commit -m "Update from AI Bot"
           git push
