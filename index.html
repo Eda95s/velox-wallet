@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Velox Wallet</title>   
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="kaspa.js"></script>
+</head>
+<body>
+    <div class="mobile-app">
+        <header class="wallet-header">
+            <p>Общий баланс</p>
+            <h1 id="total-balance-header">0.00</h1>
+            <div class="wallet-actions">
+                <button id="btn-show-send"><i class="fas fa-arrow-up"></i><span>Отправить</span></button>
+                <button id="btn-show-receive"><i class="fas fa-arrow-down"></i><span>Получить</span></button>
+                <button><i class="fas fa-credit-card"></i><span>Купить</span></button>
+            </div>
+        </header>
+
+<div id="auth-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0b0d; z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
+    <canvas id="blockchain-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
+    <div style="text-align: center; width: 100%; max-width: 320px;">
+        <i class="fas fa-wallet" style="font-size: 60px; color: var(--accent-blue); margin-bottom: 20px;"></i>
+        <h1 style="color: white; margin-bottom: 10px; font-size: 28px;">Velox Wallet</h1>
+        <p style="color: #666; margin-bottom: 50px; font-size: 14px;">Ваш портал в экосистему Kaspa</p>
+
+        <button onclick="createWallet()" style="width: 100%; padding: 16px; background: var(--accent-blue); border: none; border-radius: 14px; color: white; font-weight: bold; margin-bottom: 12px; font-size: 16px; cursor: pointer;">Создать кошелек</button>
+        <button onclick="importWallet()" style="width: 100%; padding: 16px; background: #1c1f26; border: 1px solid #333; border-radius: 14px; color: white; font-weight: bold; font-size: 16px; cursor: pointer;">Импортировать</button>
+        
+    </div>
+</div>
+
+<div id="wallet-menu-icon" style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+    <button style="background: #1c1f26; border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+        <i class="fas fa-user-circle" style="font-size: 24px; color: #fff;"></i>
+    </button>
+</div>
+
+        <main class="assets-list">
+            <div class="asset-item" id="kas-asset-row">
+                <div class="asset-icon"><i class="fas fa-bolt"></i></div>
+                <div class="asset-info">
+                    <span class="asset-name">Kaspa KAS</span>
+                </div>
+                <div class="asset-value">
+                    <span class="val-coin" id="kas-balance">0.00</span>
+                    <span class="val-usd" id="kas-usd-balance">$0.00</span>
+                </div>
+            </div>
+
+            <div id="receive-section" style="display: none; padding: 20px; text-align: center;">
+                <p style="color: var(--text-secondary); margin-bottom: 10px;">Ваш адрес для получения:</p>
+                <div id="wallet-address" style="background: #1a1c22; padding: 15px; border-radius: 12px; word-break: break-all; font-family: monospace; border: var(--border); color: #fff; font-size: 14px; margin-bottom: 15px;">
+                    </div>
+                <button onclick="copyAddress()" style="background: var(--accent-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; width: 100%;">Копировать адрес</button>
+            </div>
+
+            <div id="send-section" style="display: none; padding: 20px;">
+                <p style="color: var(--text-secondary); margin-bottom: 10px;">Отправка KAS:</p>
+                <input type="text" id="send-address" placeholder="Адрес получателя" style="width: 100%; background: #1a1c22; border: var(--border); color: white; padding: 12px; border-radius: 10px; margin-bottom: 10px;">
+                <input type="number" id="send-amount" placeholder="Сумма" style="width: 100%; background: #1a1c22; border: var(--border); color: white; padding: 12px; border-radius: 10px; margin-bottom: 15px;">
+                <button id="confirm-send" style="background: #e6e6e6; color: #000; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold;">Подтвердить отправку</button>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="active" id="nav-wallet"><i class="fas fa-wallet"></i><span>Кошелек</span></button>
+            <button id="nav-dapps"><i class="fas fa-compass"></i><span>DApps</span></button>
+            <button id="nav-settings"><i class="fas fa-gear"></i><span>Настройки</span></button>
+        </nav>
+    </div>
+
+<div id="action-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 6000; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: #13151a; padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 350px; text-align: center;">
+        <h3 id="modal-title" style="margin-top: 0; color: #fff;">Действие</h3>
+        <div id="modal-content" style="margin: 20px 0; font-family: monospace; color: #fff; background: #0a0b0d; padding: 15px; border-radius: 10px; border: 1px solid #333; text-align: left;"></div>
+        <button id="modal-action-btn" style="width: 100%; padding: 12px; background: var(--accent-blue); border: none; border-radius: 10px; color: #fff; font-weight: bold; margin-bottom: 10px; cursor: pointer;">Продолжить</button>
+        <button onclick="document.getElementById('action-modal').style.display='none'" style="background: transparent; border: none; color: #666; cursor: pointer;">Закрыть</button>
+    </div>
+</div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="bip39.min.js"></script>
+    <script src="diag.js"></script>
+    <script src="ui.js"></script>
+    
+    <script type="module">
+        import init from './kaspa/kaspa.js';
+        async function loadKaspa() {
+            try {
+                await init('./kaspa/kaspa_bg.wasm');
+                console.log("Kaspa WASM ядро загружено локально!");
+            } catch (err) {
+                console.error("Ошибка загрузки ядра:", err);
+            }
+        }
+        loadKaspa();
+    </script>
+    
+    <script type="module" src="kaspa.js"></script>
+</body>
+</html>
