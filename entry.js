@@ -1,1 +1,0 @@
-window.bip39 = require('bip39');
