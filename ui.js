@@ -163,7 +163,7 @@ async function generateMnemonicByLength(length) {
                 <p style="font-size: 12px; color: #ff4444; margin-bottom: 10px;">
                     Запишите фразу! Сейчас мы зашифруем её вашим паролем.
                 </p>
-                // ... внутри contentHtml ...
+                
 <input type="password" id="set-pin" placeholder="Придумайте пароль" 
        oninput="window.checkStrength(this.value)"
        style="width: 100%; padding: 12px; background: #1a1c22; border: 1px solid #333; color: white; border-radius: 10px; text-align: center; font-size: 16px; outline: none;">
